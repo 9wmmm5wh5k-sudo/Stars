@@ -57,13 +57,16 @@ a.back{display:inline-block;background:var(--card);border-radius:16px;padding:4p
 const BASE=JSON.parse(document.getElementById('data').textContent);
 const LOGO=BASE.logo||'';
 const S={school:BASE.school,classes:BASE.classes};
+const ICON={1:'☀️',2:'🌙',3:'🚀',4:'🚗',5:'🍀',6:'🌈',7:'🦋'};
+function fixIcons(){S.classes.forEach(c=>{if(ICON[c.id])c.icon=ICON[c.id]})}
+fixIcons();
 const cfg={apiKey:"AIzaSyDZFR66vmPGfhX429bfXi0fArHQE8JrlS4",authDomain:"stars-d84f0.firebaseapp.com",projectId:"stars-d84f0",storageBucket:"stars-d84f0.firebasestorage.app",messagingSenderId:"1069456914616",appId:"1:1069456914616:web:90b044924f4f7417331c4d"};
 let owner=false,edit=null,byStars=false,timer=null,login=false,ref=null,auth=null;
 const $=document.getElementById('root'),ST=document.getElementById('st');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const cls=id=>S.classes.find(c=>String(c.id)===String(id));
 const sum=(c,k)=>c.students.reduce((a,s)=>a+s[k],0);
-const AV=['🐶','🐱','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐸','🐵','🦄','🐧','🐥'];
+const AV=['☀️','🌙','⭐','🌈','☁️','🌸','🍀','🎈','💎','❤️','🌻','🍎','⚽','🍭'];
 const star=c=>`<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="${c}" stroke="#0002" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg>`;
 const SE=star('#ffc107'),SA=star('#29b6f6');
 let sayT=null;
@@ -145,7 +148,7 @@ document.addEventListener('input',e=>{
  const q=e.target.value.trim(),r=document.getElementById('res');
  if(!q){r.innerHTML='';return}
  let h='';
- S.classes.forEach(c=>c.students.forEach(s=>{if(s.n.includes(q))h+=`<a class="row" href="#c${c.id}"><span class="av">${c.icon}</span><span class="nm">${esc(s.n)}<br><span class="mu" style="font-size:.85rem">${esc(c.name)}</span></span><span class="pill pe">${SE} ${s.e}</span><span class="pill pa">${SA} ${s.a}</span></a>`}));
+ S.classes.forEach(c=>c.students.forEach((s,i)=>{if(s.n.includes(q))h+=`<a class="row" href="#c${c.id}"><span class="av">${AV[i%AV.length]}</span><span class="nm">${esc(s.n)}<br><span class="mu" style="font-size:.85rem">${esc(c.name)}</span></span><span class="pill pe">${SE} ${s.e}</span><span class="pill pa">${SA} ${s.a}</span></a>`}));
  r.innerHTML=h||'<p class="mu">لا توجد نتائج.</p>';
 });
 window.addEventListener('hashchange',()=>{edit=null;login=false;render()});
@@ -163,7 +166,7 @@ try{
  ref.onSnapshot(snap=>{
   if(snap.metadata.hasPendingWrites)return;
   if(snap.exists){
-   try{const d=JSON.parse(snap.data().data);if(d.classes){S.classes=d.classes}}catch(e){}
+   try{const d=JSON.parse(snap.data().data);if(d.classes){S.classes=d.classes;fixIcons()}}catch(e){}
    const f=document.activeElement;
    if(!edit&&!login&&!(f&&f.id==='q'))render();
   }
